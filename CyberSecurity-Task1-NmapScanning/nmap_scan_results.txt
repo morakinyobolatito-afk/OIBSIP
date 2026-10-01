@@ -1,0 +1,219 @@
+================================================================
+TASK 1 — BASIC NETWORK SCANNING WITH NMAP
+Target: Metasploitable 2 (192.168.56.102)
+Scanner: Kali Linux (192.168.56.101)
+Date: 2026-10-01
+================================================================
+
+----------------------------------------------------------------
+SCAN 1 — Basic Scan: nmap 192.168.56.102
+----------------------------------------------------------------
+Starting Nmap 7.99 at 2026-10-01 11:52 -0400
+Nmap scan report for 192.168.56.102
+Host is up (0.00026s latency).
+Not shown: 977 closed tcp ports (reset)
+
+PORT     STATE SERVICE
+21/tcp   open  ftp
+22/tcp   open  ssh
+23/tcp   open  telnet
+25/tcp   open  smtp
+53/tcp   open  domain
+80/tcp   open  http
+111/tcp  open  rpcbind
+139/tcp  open  netbios-ssn
+445/tcp  open  microsoft-ds
+512/tcp  open  exec
+513/tcp  open  login
+514/tcp  open  shell
+1099/tcp open  rmiregistry
+1524/tcp open  ingreslock
+2049/tcp open  nfs
+2121/tcp open  ccproxy-ftp
+3306/tcp open  mysql
+5432/tcp open  postgresql
+5900/tcp open  vnc
+6000/tcp open  X11
+6667/tcp open  irc
+8009/tcp open  ajp13
+8180/tcp open  unknown
+MAC Address: 08:00:27:24:B6:9A (Oracle VirtualBox virtual NIC)
+
+----------------------------------------------------------------
+SCAN 2 — Service Version Scan: nmap -sV 192.168.56.102
+----------------------------------------------------------------
+Starting Nmap 7.99 at 2026-10-01 11:54 -0400
+Nmap scan report for 192.168.56.102
+Host is up (0.00034s latency).
+Not shown: 977 closed tcp ports (reset)
+
+PORT     STATE SERVICE     VERSION
+21/tcp   open  ftp         vsftpd 2.3.4
+22/tcp   open  ssh         OpenSSH 4.7p1 Debian 8ubuntu1 (protocol 2.0)
+23/tcp   open  telnet      Linux telnetd
+25/tcp   open  smtp        Postfix smtpd
+53/tcp   open  domain      ISC BIND 9.4.2
+80/tcp   open  http        Apache httpd 2.2.8 ((Ubuntu) DAV/2)
+111/tcp  open  rpcbind     2 (RPC #100000)
+139/tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+445/tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+512/tcp  open  exec        netkit-rsh rexecd
+513/tcp  open  login       OpenBSD or Solaris rlogind
+514/tcp  open  shell       Netkit rshd
+1099/tcp open  java-rmi    GNU Classpath grmiregistry
+1524/tcp open  bindshell   Metasploitable root shell
+2049/tcp open  nfs         2-4 (RPC #100003)
+2121/tcp open  ftp         ProFTPD 1.3.1
+3306/tcp open  mysql       MySQL 5.0.51a-3ubuntu5
+5432/tcp open  postgresql  PostgreSQL DB 8.3.0 - 8.3.7
+5900/tcp open  vnc         VNC (protocol 3.3)
+6000/tcp open  X11         (access denied)
+6667/tcp open  irc         UnrealIRCd
+8009/tcp open  ajp13       Apache Jserv (Protocol v1.3)
+8180/tcp open  http        Apache Tomcat/Coyote JSP engine 1.1
+MAC Address: 08:00:27:24:B6:9A (Oracle VirtualBox virtual NIC)
+Service Info: Hosts: metasploitable.localdomain, irc.Metasploitable.LAN; OSs: Unix, Linux
+
+----------------------------------------------------------------
+SCAN 3 — OS Detection Scan: sudo nmap -O 192.168.56.102
+----------------------------------------------------------------
+Starting Nmap 7.99 at 2026-10-01 12:04 -0400
+Nmap scan report for 192.168.56.102
+Host is up (0.0011s latency).
+Not shown: 977 closed tcp ports (reset)
+[same 23 ports as above]
+MAC Address: 08:00:27:24:B6:9A (Oracle VirtualBox virtual NIC)
+Device type: general purpose
+Running: Linux 2.6.X
+OS CPE: cpe:/o:linux:linux_kernel:2.6
+OS details: Linux 2.6.9 - 2.6.33
+Network Distance: 1 hop
+
+OS detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 2.19 seconds
+
+================================================================
+PORT-BY-PORT SECURITY ANALYSIS
+================================================================
+
+Port 21 (FTP — vsftpd 2.3.4):
+  What it does: File Transfer Protocol service.
+  Risk: CRITICAL. This exact version (vsftpd 2.3.4) contains a well-known
+  backdoor that was maliciously inserted into the source code in 2011,
+  allowing an attacker to gain a remote root shell simply by connecting
+  with a username containing a smiley face ":)" in the login string.
+
+Port 22 (SSH — OpenSSH 4.7p1):
+  What it does: Secure Shell for encrypted remote login.
+  Risk: Medium. SSH itself is secure, but this version is extremely old
+  (2007-era) and may be vulnerable to older OpenSSH CVEs. Weak/default
+  credentials on Metasploitable also make this an easy entry point.
+
+Port 23 (Telnet):
+  What it does: Remote login, like SSH but unencrypted.
+  Risk: HIGH. Telnet transmits all data, including credentials, in
+  plaintext. Anyone capturing network traffic can read login
+  credentials directly.
+
+Port 25 (SMTP — Postfix):
+  What it does: Mail transfer service.
+  Risk: Medium. Can be abused for user enumeration (VRFY command) or as
+  an open relay if misconfigured.
+
+Port 53 (DNS — ISC BIND 9.4.2):
+  What it does: Domain Name resolution service.
+  Risk: Medium. This BIND version is old and has several known CVEs,
+  including potential for cache poisoning or denial of service.
+
+Port 80 (HTTP — Apache 2.2.8):
+  What it does: Web server.
+  Risk: Medium-High. Old Apache version with known vulnerabilities; this
+  host is known to serve intentionally vulnerable web apps (e.g. DVWA)
+  used elsewhere in this internship.
+
+Port 111 (rpcbind):
+  What it does: Maps RPC program numbers to network port numbers.
+  Risk: Medium. Can leak information about other RPC services running
+  on the host, aiding further attacks (e.g., against NFS).
+
+Port 139 & 445 (NetBIOS/SMB — Samba 3.X-4.X):
+  What it does: Windows-style file/printer sharing over the network.
+  Risk: HIGH. Old Samba versions have several critical remote code
+  execution vulnerabilities (e.g., the "usermap_script" exploit).
+
+Port 512, 513, 514 (rexec, rlogin, rsh):
+  What they do: Legacy remote execution/login services ("r-services").
+  Risk: CRITICAL. These protocols offer no encryption and historically
+  support trivially weak or trust-based authentication (.rhosts files),
+  making them an easy path to remote command execution.
+
+Port 1099 (Java RMI registry):
+  What it does: Java Remote Method Invocation registry.
+  Risk: HIGH. Misconfigured RMI registries are a well-documented vector
+  for remote code execution via deserialization attacks.
+
+Port 1524 (bindshell):
+  What it does: Nmap identifies this directly as "Metasploitable root
+  shell."
+  Risk: CRITICAL. This port is literally a backdoor root shell left open
+  on the system by design (for ingreslock-based exploit practice) —
+  connecting to it grants immediate root access with no authentication.
+
+Port 2049 (NFS):
+  What it does: Network File System for shared file access.
+  Risk: HIGH. Misconfigured NFS exports can allow unauthorized read/write
+  access to the filesystem from any host on the network.
+
+Port 2121 (FTP — ProFTPD 1.3.1):
+  What it does: A second FTP service.
+  Risk: CRITICAL. ProFTPD 1.3.1 on this image also has a known backdoor
+  vulnerability allowing remote command execution.
+
+Port 3306 (MySQL 5.0.51a):
+  What it does: MySQL database service.
+  Risk: HIGH. Very old MySQL version with known authentication bypass
+  vulnerabilities; default/weak credentials are common on this image.
+
+Port 5432 (PostgreSQL 8.3.x):
+  What it does: PostgreSQL database service.
+  Risk: Medium-High. Old version with known vulnerabilities; database
+  exposure risks data theft if credentials are weak.
+
+Port 5900 (VNC):
+  What it does: Remote desktop/screen sharing.
+  Risk: HIGH. VNC protocol 3.3 is old and has weak authentication;
+  exposed VNC often allows full remote desktop takeover.
+
+Port 6000 (X11):
+  What it does: X Window System display server protocol.
+  Risk: Medium. If access control is disabled, X11 can allow remote
+  keystroke capture or screen access.
+
+Port 6667 (IRC — UnrealIRCd):
+  What it does: Internet Relay Chat server.
+  Risk: CRITICAL. This specific UnrealIRCd build is famous for a
+  backdoored source distribution that let attackers execute arbitrary
+  commands by sending a specially crafted message.
+
+Port 8009 (AJP13 — Apache Jserv Protocol):
+  What it does: Connector protocol between Apache and Tomcat.
+  Risk: HIGH. AJP has known vulnerabilities (e.g., "Ghostcat") allowing
+  file read/inclusion attacks against the Tomcat server.
+
+Port 8180 (HTTP — Apache Tomcat):
+  What it does: Web server for Java applications.
+  Risk: HIGH. Older Tomcat with default/weak manager credentials is a
+  common path to remote code execution via malicious WAR file upload.
+
+================================================================
+SUMMARY
+================================================================
+This scan identified 23 open TCP ports on Metasploitable 2, the vast
+majority of which run outdated, intentionally vulnerable service
+versions. Several ports (21, 1524, 2121, 6667) are directly exploitable
+with zero authentication due to known backdoors. This result is
+expected and by design — Metasploitable 2 is built specifically as a
+vulnerable target for security training — but it illustrates clearly
+why network scanning and service inventory are a critical first step
+in any security assessment: nearly every open port here represents a
+real, documented attack path.
