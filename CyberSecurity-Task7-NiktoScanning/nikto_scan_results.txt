@@ -1,0 +1,38 @@
+Target IP: 127.0.0.1
+Target Hostname: localhost
+Target Port: 80
+Platform: Linux/Unix
+Start Time: 2026-10-08 15:52:58 (GMT-4)
+
+Server: Apache/2.4.58 (Unix) OpenSSL/1.1.1w PHP/8.2.12 mod_perl/2.0.12 Perl/v5.34.1
+Multiple IPs found: 127.0.0.1, ::1
+Retrieved x-powered-by header: PHP/8.2.12
+No CGI Directories found (use '-C all' to force check all possible dirs). CGI tests skipped.
+HTTP TRACE method is active and replies which suggests the host is vulnerable to XST.
+mod_perl/2.0.12 appears to be outdated (current is at least 2.0.13)
+Apache/2.4.58 appears to be outdated (current is at least 2.4.68)
+PHP/8.2.12 appears to be outdated (current is at least 8.5.0)
+OpenSSL/1.1.1w appears to be outdated (current is at least 4.0.1)
+Perl/v5.34.1 appears to be outdated (current is at least v5.44.0)
+Suggested security header missing: content-security-policy
+Suggested security header missing: referrer-policy
+Suggested security header missing: strict-transport-security
+Suggested security header missing: x-content-type-options
+Suggested security header missing: permissions-policy
+/webalizer/: Directory indexing found
+/img/: Directory indexing found
+/img/: This might be interesting
+/phpmyadmin/ChangeLog: phpMyAdmin is for managing MySQL databases, and should be protected or limited to authorized hosts
+/phpmyadmin/index.php: Uncommon header(s) 'x-ob_mode' found, with contents: 1
+/icons/: Directory indexing found
+/icons/README: Apache default file found
+/phpmyadmin/README: phpMyAdmin is for managing MySQL databases, and should be protected or limited to authorized hosts
+X-Frame-Options header is deprecated and was replaced with the Content-Security-Policy HTTP header with the frame-ancestors directive
+The X-Content-Type-Options header is not set. This could allow the user agent to render the content of the site in a different fashion to the MIME type
+
+7797 requests: 0 errors and 22 items reported on the remote host
+End Time: 2026-10-08 15:56:45 (GMT-4) (31 seconds)
+
+1 host(s) tested
+
+Note: This scan was run twice — once with DVWA security level set to Low, and once set to Impossible. Results were identical, since Nikto scans the underlying web server (Apache/PHP/OpenSSL configuration) rather than DVWA's own internal application-level security setting. This confirms that DVWA's security level toggle only affects DVWA's own vulnerable code paths, not the server stack Nikto examines.
